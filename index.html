@@ -1,104 +1,34 @@
+
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-<meta charset="UTF-8">
+<title>AI Health Predictor - Hackathon Pro</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>HealthCare Finder</title>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <style>
-*{
+body{
+font-family:Arial;
 margin:0;
-padding:0;
-box-sizing:border-box;
-font-family:'Segoe UI',sans-serif;
-scroll-behavior:smooth;
+background:#eef2f7;
 }
-
-body{background:#f4f7fb;}
 
 nav{
-background:white;
-display:flex;
-justify-content:space-between;
-align-items:center;
-padding:15px 50px;
-box-shadow:0 3px 15px rgba(0,0,0,0.05);
-position:sticky;
-top:0;
-z-index:1000;
-}
-
-nav h2{color:#0d6efd;}
-
-nav ul{
-list-style:none;
-display:flex;
-gap:25px;
-}
-
-nav a{
-text-decoration:none;
-color:#333;
-font-weight:500;
-}
-
-.btn{
-background:#20c997;
+background:#111827;
 color:white;
-padding:8px 15px;
-border-radius:6px;
-}
-
-.hero{
-background:linear-gradient(135deg,#0d6efd,#20c997);
-color:white;
+padding:15px;
 text-align:center;
-padding:90px 20px;
+font-size:22px;
 }
-
-.hero h1{font-size:45px;margin-bottom:15px;}
 
 .section{
-padding:70px 20px;
-max-width:1100px;
+padding:30px;
+max-width:1000px;
 margin:auto;
 }
 
-.section h2{
-text-align:center;
-margin-bottom:40px;
-}
-
-.search-box{
-display:flex;
-gap:10px;
-}
-
-.search-box input{
-flex:1;
-padding:12px;
-border-radius:8px;
-border:1px solid #ccc;
-}
-
-.search-box button{
-padding:12px 18px;
-background:#20c997;
-border:none;
-color:white;
-border-radius:8px;
-cursor:pointer;
-}
-
-.card{
-background:white;
-padding:20px;
-border-radius:12px;
-margin-top:20px;
-box-shadow:0 5px 20px rgba(0,0,0,0.05);
-}
-
-select,input{
+input{
 width:100%;
 padding:10px;
 margin:10px 0;
@@ -106,203 +36,191 @@ border-radius:6px;
 border:1px solid #ccc;
 }
 
-form{
-background:white;
-padding:25px;
-border-radius:12px;
-box-shadow:0 5px 20px rgba(0,0,0,0.05);
-}
-
-form button{
-width:100%;
-padding:12px;
-background:#0d6efd;
+button{
+padding:10px 15px;
+background:#2563eb;
 border:none;
 color:white;
-border-radius:8px;
+border-radius:6px;
 cursor:pointer;
 }
 
+.card{
+background:white;
+padding:20px;
+margin-top:15px;
+border-radius:8px;
+box-shadow:0 4px 12px rgba(0,0,0,0.08);
+}
+
+.chatbox{
+background:white;
+padding:15px;
+height:250px;
+overflow-y:auto;
+border-radius:8px;
+margin-bottom:10px;
+}
+
+.bot{color:#2563eb;}
+.user{text-align:right;color:#111;}
+
+canvas{
+background:white;
+padding:10px;
+border-radius:8px;
+margin-top:20px;
+}
+
 footer{
-background:#0f172a;
+background:#111827;
 color:white;
 text-align:center;
-padding:25px;
+padding:20px;
 margin-top:40px;
 }
 </style>
 </head>
+
 <body>
 
 <nav>
-<h2>+ HealthCare Finder</h2>
-<ul>
-<li><a href="#disease">Diseases</a></li>
-<li><a href="#doctors">Doctors</a></li>
-<li><a href="#booking">Booking</a></li>
-</ul>
-<a href="#booking" class="btn">Get Started</a>
+🤖 AI HealthCare Predictor - Hackathon Edition
 </nav>
 
-<section class="hero">
-<h1>Your Health, Our Priority</h1>
-<p>Find doctors, search diseases & book appointments instantly.</p>
-</section>
+<div class="section">
 
-<section class="section" id="disease">
-<h2>Disease Encyclopedia</h2>
-<div class="search-box">
-<input type="text" id="diseaseInput" placeholder="Search disease...">
+<h2>🔍 Disease Search</h2>
+<input type="text" id="diseaseInput" placeholder="Search disease by name">
 <button onclick="searchDisease()">Search</button>
-</div>
 <div id="diseaseResult"></div>
-</section>
 
-<section class="section" id="doctors">
-<h2>Find Best Doctors</h2>
-<select id="specialization">
-<option>Cardiologist</option>
-<option>Neurologist</option>
-<option>Dermatologist</option>
-</select>
+<hr><br>
 
-<select id="sortFee">
-<option value="low">Fee Low → High</option>
-<option value="high">Fee High → Low</option>
-</select>
+<h2>🧠 AI Symptom Prediction</h2>
+<input type="text" id="symptomInput" placeholder="Enter symptoms like fever cough headache">
+<button onclick="predictDisease()">Predict</button>
+<div id="aiResult"></div>
 
-<div id="doctorList"></div>
-</section>
+<canvas id="resultChart"></canvas>
 
-<section class="section" id="booking">
-<h2>Book Appointment</h2>
+<hr><br>
 
-<form onsubmit="bookAppointment(event)">
-<input type="text" id="name" placeholder="Patient Name" required>
-<input type="number" id="age" placeholder="Age" required>
-<select id="gender">
-<option>Male</option>
-<option>Female</option>
-</select>
-<input type="text" id="diseaseName" placeholder="Disease" required>
-<input type="date" id="date" required>
-<select id="time">
-<option>09:00 AM</option>
-<option>11:00 AM</option>
-<option>02:00 PM</option>
-</select>
-<button type="submit">Confirm Booking</button>
-</form>
+<h2>💬 AI Chatbot</h2>
+<div class="chatbox" id="chatbox"></div>
+<input type="text" id="chatInput" placeholder="Ask about disease or symptoms">
+<button onclick="sendMessage()">Send</button>
 
-<div id="bookingMessage"></div>
-</section>
+</div>
 
 <footer>
-HealthCare Finder © 2026 | Hackathon Project by Rahul Poddar
+Hackathon Project | Rahul Poddar | 2026
 </footer>
 
-  <script>
+<script>
 
-// ================== 50+ DISEASE DATASET ==================
-
-const diseases = [
-
-{name:"Diabetes", symptoms:["fatigue","blurred vision","thirst","urination"]},
-{name:"Hypertension", symptoms:["headache","dizziness","chest pain"]},
-{name:"Malaria", symptoms:["fever","chills","sweating","headache"]},
-{name:"Dengue", symptoms:["fever","joint pain","rash","muscle pain"]},
-{name:"Tuberculosis", symptoms:["cough","weight loss","night sweats"]},
-{name:"Asthma", symptoms:["shortness of breath","wheezing","chest tightness"]},
-{name:"Migraine", symptoms:["headache","nausea","light sensitivity"]},
-{name:"Covid-19", symptoms:["fever","cough","loss of smell","breathlessness"]},
-{name:"Anemia", symptoms:["fatigue","weakness","pale skin"]},
-{name:"Arthritis", symptoms:["joint pain","swelling","stiffness"]},
-{name:"Typhoid", symptoms:["fever","weakness","abdominal pain"]},
-{name:"Pneumonia", symptoms:["cough","fever","chest pain"]},
-{name:"Flu", symptoms:["fever","cough","body ache"]},
-{name:"Gastritis", symptoms:["stomach pain","nausea","vomiting"]},
-{name:"Kidney Stone", symptoms:["back pain","blood in urine","nausea"]},
-{name:"Depression", symptoms:["sadness","fatigue","sleep disturbance"]},
-{name:"Anxiety", symptoms:["fear","nervousness","sweating"]},
-{name:"Bronchitis", symptoms:["cough","mucus","fatigue"]},
-{name:"Chickenpox", symptoms:["rash","fever","itching"]},
-{name:"Measles", symptoms:["rash","fever","cough"]},
-{name:"Hepatitis", symptoms:["jaundice","fatigue","abdominal pain"]},
-{name:"Appendicitis", symptoms:["abdominal pain","nausea","fever"]},
-{name:"Food Poisoning", symptoms:["vomiting","diarrhea","fever"]},
-{name:"Cholera", symptoms:["diarrhea","dehydration","weakness"]},
-{name:"Leukemia", symptoms:["fatigue","bleeding","weight loss"]},
-{name:"Stroke", symptoms:["numbness","confusion","headache"]},
-{name:"Heart Attack", symptoms:["chest pain","shortness of breath","nausea"]},
-{name:"Sinusitis", symptoms:["headache","facial pain","congestion"]},
-{name:"Ulcer", symptoms:["stomach pain","burning sensation","nausea"]},
-{name:"Psoriasis", symptoms:["skin rash","itching","red patches"]},
-{name:"Eczema", symptoms:["itching","dry skin","rash"]},
-{name:"Obesity", symptoms:["fatigue","joint pain","breathlessness"]},
-{name:"Thyroid Disorder", symptoms:["weight gain","fatigue","hair loss"]},
-{name:"Parkinson's Disease", symptoms:["tremor","stiffness","slow movement"]},
-{name:"Alzheimer's", symptoms:["memory loss","confusion","difficulty speaking"]},
-{name:"Epilepsy", symptoms:["seizures","confusion","staring spell"]},
-{name:"Liver Cirrhosis", symptoms:["jaundice","swelling","fatigue"]},
-{name:"Pancreatitis", symptoms:["abdominal pain","vomiting","fever"]},
-{name:"Osteoporosis", symptoms:["bone pain","fractures","back pain"]},
-{name:"UTI", symptoms:["burning urination","frequent urination","pain"]},
-{name:"Glaucoma", symptoms:["vision loss","eye pain","headache"]},
-{name:"Cataract", symptoms:["blurred vision","cloudy vision"]},
-{name:"Allergy", symptoms:["sneezing","itching","rash"]},
-{name:"Mumps", symptoms:["swollen glands","fever","headache"]},
-{name:"Rabies", symptoms:["fever","fear","confusion"]},
-{name:"Tetanus", symptoms:["muscle stiffness","jaw locking"]},
-{name:"Polio", symptoms:["weakness","paralysis","fever"]},
-{name:"Zika Virus", symptoms:["rash","fever","joint pain"]},
-{name:"Sickle Cell", symptoms:["pain","fatigue","swelling"]},
-{name:"Lyme Disease", symptoms:["rash","fever","fatigue"]}
-
+const diseases=[
+{name:"Malaria",symptoms:["fever","chills","sweating","headache"]},
+{name:"Dengue",symptoms:["fever","joint","rash","pain"]},
+{name:"Covid-19",symptoms:["fever","cough","breath"]},
+{name:"Diabetes",symptoms:["fatigue","thirst","urination"]},
+{name:"Hypertension",symptoms:["headache","dizziness","chest"]},
+{name:"Asthma",symptoms:["breath","wheezing","tightness"]},
+{name:"Flu",symptoms:["fever","cough","body"]},
+{name:"Typhoid",symptoms:["fever","weakness","abdominal"]},
+{name:"Migraine",symptoms:["headache","nausea","light"]},
+{name:"Arthritis",symptoms:["joint","pain","stiffness"]}
 ];
 
-// ================== AI SYMPTOM MATCHING ==================
+function searchDisease(){
+let input=document.getElementById("diseaseInput").value.toLowerCase();
+let result=document.getElementById("diseaseResult");
+result.innerHTML="";
+let filtered=diseases.filter(d=>d.name.toLowerCase().includes(input));
+
+if(filtered.length>0){
+filtered.forEach(d=>{
+result.innerHTML+=`
+<div class="card">
+<h3>${d.name}</h3>
+<p>Symptoms: ${d.symptoms.join(", ")}</p>
+</div>`;
+});
+}else{
+result.innerHTML="<div class='card'>Not found</div>";
+}
+}
+
+let chart;
 
 function predictDisease(){
+let input=document.getElementById("symptomInput").value.toLowerCase();
+let user=input.split(" ");
 
-let input = document.getElementById("symptomInput").value.toLowerCase();
-let userSymptoms = input.split(" ");
+let best=null;
+let maxScore=0;
 
-let bestMatch = null;
-let maxScore = 0;
+let labels=[];
+let scores=[];
 
-diseases.forEach(disease => {
+diseases.forEach(d=>{
+let score=0;
+d.symptoms.forEach(s=>{
+if(user.includes(s)){score++;}
+});
+let percentage=(score/d.symptoms.length)*100;
+labels.push(d.name);
+scores.push(percentage.toFixed(1));
 
-let score = 0;
-
-disease.symptoms.forEach(symptom => {
-if(userSymptoms.includes(symptom)){
-score++;
+if(score>maxScore){
+maxScore=score;
+best=d.name;
 }
 });
 
-if(score > maxScore){
-maxScore = score;
-bestMatch = disease.name;
-}
+let accuracy=((maxScore/4)*100).toFixed(1);
 
-});
-
-let resultDiv = document.getElementById("aiResult");
-
-if(bestMatch){
-resultDiv.innerHTML = `<div class="card">
-<h3>🧠 AI Prediction Result</h3>
-<p><b>Possible Disease:</b> ${bestMatch}</p>
-<p><b>Match Score:</b> ${maxScore}</p>
-<p>⚠ This is a demo prediction. Consult a doctor.</p>
+document.getElementById("aiResult").innerHTML=`
+<div class="card">
+<h3>Prediction: ${best}</h3>
+<p>Accuracy: <b>${accuracy}%</b></p>
+<p style="color:red;">Demo AI — Consult Doctor</p>
 </div>`;
-} else {
-resultDiv.innerHTML = "<div class='card'>No matching disease found.</div>";
+
+if(chart){chart.destroy();}
+
+chart=new Chart(document.getElementById("resultChart"),{
+type:"bar",
+data:{
+labels:labels,
+datasets:[{
+label:"Match %",
+data:scores
+}]
+}
+});
 }
 
-}
+function sendMessage(){
+let input=document.getElementById("chatInput").value;
+let chatbox=document.getElementById("chatbox");
 
+chatbox.innerHTML+=`<div class="user">${input}</div>`;
+
+let reply="I recommend using symptom predictor.";
+
+diseases.forEach(d=>{
+if(input.toLowerCase().includes(d.name.toLowerCase())){
+reply=`${d.name} symptoms are: ${d.symptoms.join(", ")}`;
+}
+});
+
+chatbox.innerHTML+=`<div class="bot">${reply}</div>`;
+chatbox.scrollTop=chatbox.scrollHeight;
+document.getElementById("chatInput").value="";
+}
 
 </script>
+
 </body>
 </html>
