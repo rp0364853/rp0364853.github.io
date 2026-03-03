@@ -2,96 +2,34 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>AI Health Predictor - Hackathon Pro</title>
+<title>AI Smart Healthcare System - Final Hackathon</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <style>
-body{
-font-family:Arial;
-margin:0;
-background:#eef2f7;
-}
-
-nav{
-background:#111827;
-color:white;
-padding:15px;
-text-align:center;
-font-size:22px;
-}
-
-.section{
-padding:30px;
-max-width:1000px;
-margin:auto;
-}
-
-input{
-width:100%;
-padding:10px;
-margin:10px 0;
-border-radius:6px;
-border:1px solid #ccc;
-}
-
-button{
-padding:10px 15px;
-background:#2563eb;
-border:none;
-color:white;
-border-radius:6px;
-cursor:pointer;
-}
-
-.card{
-background:white;
-padding:20px;
-margin-top:15px;
-border-radius:8px;
-box-shadow:0 4px 12px rgba(0,0,0,0.08);
-}
-
-.chatbox{
-background:white;
-padding:15px;
-height:250px;
-overflow-y:auto;
-border-radius:8px;
-margin-bottom:10px;
-}
-
+body{font-family:Arial;margin:0;background:#eef2f7;}
+nav{background:#0f172a;color:white;padding:15px;text-align:center;font-size:22px;}
+.section{padding:30px;max-width:1200px;margin:auto;}
+input,select{width:100%;padding:10px;margin:10px 0;border-radius:6px;border:1px solid #ccc;}
+button{padding:10px 15px;background:#2563eb;border:none;color:white;border-radius:6px;cursor:pointer;}
+.card{background:white;padding:20px;margin-top:15px;border-radius:8px;box-shadow:0 4px 10px rgba(0,0,0,0.08);}
+.chatbox{background:white;padding:15px;height:220px;overflow-y:auto;border-radius:8px;margin-bottom:10px;}
 .bot{color:#2563eb;}
-.user{text-align:right;color:#111;}
-
-canvas{
-background:white;
-padding:10px;
-border-radius:8px;
-margin-top:20px;
-}
-
-footer{
-background:#111827;
-color:white;
-text-align:center;
-padding:20px;
-margin-top:40px;
-}
+.user{text-align:right;color:black;}
+footer{background:#0f172a;color:white;text-align:center;padding:20px;margin-top:40px;}
 </style>
 </head>
 
 <body>
 
 <nav>
-🤖 AI HealthCare Predictor - Hackathon Edition
+🏥 AI Smart Healthcare System | Hackathon Final Edition
 </nav>
 
 <div class="section">
 
 <h2>🔍 Disease Search</h2>
-<input type="text" id="diseaseInput" placeholder="Search disease by name">
+<input type="text" id="diseaseInput" placeholder="Search disease name">
 <button onclick="searchDisease()">Search</button>
 <div id="diseaseResult"></div>
 
@@ -99,16 +37,36 @@ margin-top:40px;
 
 <h2>🧠 AI Symptom Prediction</h2>
 <input type="text" id="symptomInput" placeholder="Enter symptoms like fever cough headache">
-<button onclick="predictDisease()">Predict</button>
+<button onclick="predictDisease()">Predict Disease</button>
 <div id="aiResult"></div>
+<canvas id="chart"></canvas>
 
-<canvas id="resultChart"></canvas>
+<hr><br>
+
+<h2>👨‍⚕️ Recommended Doctor</h2>
+<div id="doctorSection"></div>
+
+<hr><br>
+
+<h2>📅 Book Appointment</h2>
+<input type="text" id="patientName" placeholder="Enter Your Name">
+<select id="doctorSelect"></select>
+<input type="date" id="appointmentDate">
+<select id="appointmentTime">
+<option>10:00 AM</option>
+<option>12:00 PM</option>
+<option>3:00 PM</option>
+<option>5:00 PM</option>
+<option>7:00 PM</option>
+</select>
+<button onclick="bookAppointment()">Book Now</button>
+<div id="bookingResult"></div>
 
 <hr><br>
 
 <h2>💬 AI Chatbot</h2>
 <div class="chatbox" id="chatbox"></div>
-<input type="text" id="chatInput" placeholder="Ask about disease or symptoms">
+<input type="text" id="chatInput" placeholder="Ask about disease">
 <button onclick="sendMessage()">Send</button>
 
 </div>
@@ -119,108 +77,186 @@ Hackathon Project | Rahul Poddar | 2026
 
 <script>
 
+/* ===================== 50+ DISEASE DATASET ===================== */
 const diseases=[
-{name:"Malaria",symptoms:["fever","chills","sweating","headache"]},
-{name:"Dengue",symptoms:["fever","joint","rash","pain"]},
-{name:"Covid-19",symptoms:["fever","cough","breath"]},
-{name:"Diabetes",symptoms:["fatigue","thirst","urination"]},
-{name:"Hypertension",symptoms:["headache","dizziness","chest"]},
-{name:"Asthma",symptoms:["breath","wheezing","tightness"]},
-{name:"Flu",symptoms:["fever","cough","body"]},
-{name:"Typhoid",symptoms:["fever","weakness","abdominal"]},
-{name:"Migraine",symptoms:["headache","nausea","light"]},
-{name:"Arthritis",symptoms:["joint","pain","stiffness"]}
+{name:"Malaria",symptoms:["fever","chills","sweating","headache"],doctor:"Dr. Amit Sharma"},
+{name:"Dengue",symptoms:["fever","rash","joint","pain"],doctor:"Dr. Priya Sen"},
+{name:"Covid-19",symptoms:["fever","cough","breath"],doctor:"Dr. Rahul Verma"},
+{name:"Diabetes",symptoms:["fatigue","thirst","urination"],doctor:"Dr. Neha Kapoor"},
+{name:"Asthma",symptoms:["breath","wheezing","tightness"],doctor:"Dr. Arjun Roy"},
+{name:"Hypertension",symptoms:["headache","dizziness","chest"],doctor:"Dr. Rohan Das"},
+{name:"Migraine",symptoms:["headache","nausea","light"],doctor:"Dr. Sneha Iyer"},
+{name:"Typhoid",symptoms:["fever","weakness","abdominal"],doctor:"Dr. Vikram Singh"},
+{name:"Flu",symptoms:["fever","cough","body"],doctor:"Dr. Meera Joshi"},
+{name:"Tuberculosis",symptoms:["cough","weight","night"],doctor:"Dr. Aditya Rao"},
+{name:"Arthritis",symptoms:["joint","pain","stiffness"],doctor:"Dr. Kunal Ghosh"},
+{name:"Anemia",symptoms:["fatigue","pale","weakness"],doctor:"Dr. Nidhi Sharma"},
+{name:"Pneumonia",symptoms:["cough","fever","chest"],doctor:"Dr. Suresh Pillai"},
+{name:"Bronchitis",symptoms:["cough","mucus","fatigue"],doctor:"Dr. Tanvi Mehta"},
+{name:"Chickenpox",symptoms:["rash","fever","itching"],doctor:"Dr. Kavita Roy"},
+{name:"Measles",symptoms:["rash","cough","fever"],doctor:"Dr. Anil Gupta"},
+{name:"Hepatitis",symptoms:["jaundice","fatigue","abdominal"],doctor:"Dr. Sameer Khan"},
+{name:"Ulcer",symptoms:["stomach","burning","pain"],doctor:"Dr. Ritika Bose"},
+{name:"Allergy",symptoms:["sneezing","itching","rash"],doctor:"Dr. Manish Arora"},
+{name:"Stroke",symptoms:["numbness","confusion","headache"],doctor:"Dr. Pooja Menon"},
+{name:"Heart Attack",symptoms:["chest","pain","nausea"],doctor:"Dr. Raj Malhotra"},
+{name:"Kidney Stone",symptoms:["back","pain","urine"],doctor:"Dr. Shweta Nair"},
+{name:"Depression",symptoms:["sadness","fatigue","sleep"],doctor:"Dr. Arvind Patel"},
+{name:"Anxiety",symptoms:["fear","nervous","sweating"],doctor:"Dr. Ritu Sharma"},
+{name:"Thyroid Disorder",symptoms:["weight","fatigue","hair"],doctor:"Dr. Deepak Jain"},
+{name:"Obesity",symptoms:["weight","fatigue","breath"],doctor:"Dr. Preeti Verma"},
+{name:"Glaucoma",symptoms:["vision","eye","pain"],doctor:"Dr. Sanya Kapoor"},
+{name:"Cataract",symptoms:["blurred","cloudy","vision"],doctor:"Dr. Lokesh Batra"},
+{name:"UTI",symptoms:["burning","urination","pain"],doctor:"Dr. Swati Das"},
+{name:"Pancreatitis",symptoms:["abdominal","vomiting","pain"],doctor:"Dr. Harsh Vardhan"},
+{name:"Osteoporosis",symptoms:["bone","fracture","pain"],doctor:"Dr. Ramesh Iyer"},
+{name:"Psoriasis",symptoms:["red","itching","rash"],doctor:"Dr. Alka Shah"},
+{name:"Eczema",symptoms:["dry","itching","rash"],doctor:"Dr. Sejal Desai"},
+{name:"Zika Virus",symptoms:["rash","fever","joint"],doctor:"Dr. Ankit Tiwari"},
+{name:"Lyme Disease",symptoms:["rash","fever","fatigue"],doctor:"Dr. Gaurav Mehta"},
+{name:"Cholera",symptoms:["diarrhea","dehydration","weakness"],doctor:"Dr. Riya Kapoor"},
+{name:"Mumps",symptoms:["swelling","fever","pain"],doctor:"Dr. Anurag Sen"},
+{name:"Rabies",symptoms:["fear","fever","confusion"],doctor:"Dr. Mohit Agarwal"},
+{name:"Tetanus",symptoms:["stiffness","jaw","pain"],doctor:"Dr. Priyanka Roy"},
+{name:"Polio",symptoms:["weakness","paralysis","fatigue"],doctor:"Dr. Vishal Kumar"},
+{name:"Sickle Cell",symptoms:["pain","fatigue","anemia"],doctor:"Dr. Megha Sinha"},
+{name:"Sinusitis",symptoms:["headache","facial","congestion"],doctor:"Dr. Rahul Sethi"},
+{name:"Appendicitis",symptoms:["abdominal","pain","fever"],doctor:"Dr. Tarun Mehra"},
+{name:"Food Poisoning",symptoms:["vomiting","diarrhea","fever"],doctor:"Dr. Neelam Arora"},
+{name:"Gastritis",symptoms:["stomach","pain","nausea"],doctor:"Dr. Komal Jain"},
+{name:"Leukemia",symptoms:["fatigue","bleeding","weight"],doctor:"Dr. Siddharth Rao"},
+{name:"Parkinson",symptoms:["tremor","stiffness","slow"],doctor:"Dr. Hemant Joshi"},
+{name:"Alzheimer",symptoms:["memory","confusion","loss"],doctor:"Dr. Niharika Das"},
+{name:"Epilepsy",symptoms:["seizure","confusion","jerking"],doctor:"Dr. Sunil Patil"},
+{name:"Liver Cirrhosis",symptoms:["jaundice","swelling","fatigue"],doctor:"Dr. Amarjeet Singh"}
 ];
+
+/* ===================== 25+ DOCTOR DATABASE ===================== */
+const doctors=[
+{name:"Dr. Amit Sharma",specialist:"Infectious Disease",fees:800,time:"10AM - 2PM"},
+{name:"Dr. Priya Sen",specialist:"General Physician",fees:700,time:"12PM - 4PM"},
+{name:"Dr. Rahul Verma",specialist:"Pulmonologist",fees:1000,time:"2PM - 6PM"},
+{name:"Dr. Neha Kapoor",specialist:"Endocrinologist",fees:900,time:"11AM - 3PM"},
+{name:"Dr. Arjun Roy",specialist:"Chest Specialist",fees:850,time:"1PM - 5PM"},
+{name:"Dr. Rohan Das",specialist:"Cardiologist",fees:1200,time:"3PM - 7PM"},
+{name:"Dr. Sneha Iyer",specialist:"Neurologist",fees:1100,time:"10AM - 1PM"},
+{name:"Dr. Vikram Singh",specialist:"Physician",fees:750,time:"4PM - 8PM"},
+{name:"Dr. Meera Joshi",specialist:"Family Doctor",fees:600,time:"9AM - 1PM"},
+{name:"Dr. Aditya Rao",specialist:"Lung Specialist",fees:950,time:"1PM - 4PM"},
+{name:"Dr. Kunal Ghosh",specialist:"Orthopedic",fees:1000,time:"2PM - 6PM"},
+{name:"Dr. Nidhi Sharma",specialist:"Hematologist",fees:900,time:"10AM - 2PM"},
+{name:"Dr. Suresh Pillai",specialist:"Respiratory",fees:950,time:"11AM - 4PM"},
+{name:"Dr. Tanvi Mehta",specialist:"Pulmonary",fees:900,time:"12PM - 5PM"},
+{name:"Dr. Kavita Roy",specialist:"Dermatologist",fees:800,time:"2PM - 6PM"},
+{name:"Dr. Anil Gupta",specialist:"Physician",fees:750,time:"10AM - 3PM"},
+{name:"Dr. Sameer Khan",specialist:"Liver Specialist",fees:1100,time:"1PM - 5PM"},
+{name:"Dr. Ritika Bose",specialist:"Gastroenterologist",fees:1000,time:"3PM - 7PM"},
+{name:"Dr. Manish Arora",specialist:"Allergist",fees:850,time:"9AM - 12PM"},
+{name:"Dr. Pooja Menon",specialist:"Neurologist",fees:1200,time:"4PM - 8PM"},
+{name:"Dr. Raj Malhotra",specialist:"Cardiologist",fees:1300,time:"5PM - 9PM"},
+{name:"Dr. Shweta Nair",specialist:"Urologist",fees:950,time:"11AM - 3PM"},
+{name:"Dr. Arvind Patel",specialist:"Psychiatrist",fees:1000,time:"2PM - 6PM"},
+{name:"Dr. Ritu Sharma",specialist:"Mental Health",fees:900,time:"12PM - 4PM"},
+{name:"Dr. Deepak Jain",specialist:"Thyroid Specialist",fees:850,time:"10AM - 2PM"}
+];
+
+let chart;
+
+/* ===================== FUNCTIONS ===================== */
 
 function searchDisease(){
 let input=document.getElementById("diseaseInput").value.toLowerCase();
 let result=document.getElementById("diseaseResult");
 result.innerHTML="";
-let filtered=diseases.filter(d=>d.name.toLowerCase().includes(input));
-
-if(filtered.length>0){
-filtered.forEach(d=>{
-result.innerHTML+=`
-<div class="card">
-<h3>${d.name}</h3>
-<p>Symptoms: ${d.symptoms.join(", ")}</p>
-</div>`;
+diseases.filter(d=>d.name.toLowerCase().includes(input))
+.forEach(d=>{
+result.innerHTML+=`<div class="card"><h3>${d.name}</h3>
+<p>Symptoms: ${d.symptoms.join(", ")}</p></div>`;
 });
-}else{
-result.innerHTML="<div class='card'>Not found</div>";
 }
-}
-
-let chart;
 
 function predictDisease(){
-let input=document.getElementById("symptomInput").value.toLowerCase();
-let user=input.split(" ");
-
-let best=null;
-let maxScore=0;
-
-let labels=[];
-let scores=[];
+let input=document.getElementById("symptomInput").value.toLowerCase().split(" ");
+let best=null,maxScore=0,labels=[],scores=[];
 
 diseases.forEach(d=>{
 let score=0;
-d.symptoms.forEach(s=>{
-if(user.includes(s)){score++;}
-});
-let percentage=(score/d.symptoms.length)*100;
+d.symptoms.forEach(s=>{if(input.includes(s))score++;});
+let percent=(score/d.symptoms.length)*100;
 labels.push(d.name);
-scores.push(percentage.toFixed(1));
-
-if(score>maxScore){
-maxScore=score;
-best=d.name;
-}
+scores.push(percent.toFixed(1));
+if(score>maxScore){maxScore=score;best=d;}
 });
 
-let accuracy=((maxScore/4)*100).toFixed(1);
+if(best){
+let accuracy=((maxScore/best.symptoms.length)*100).toFixed(1);
+document.getElementById("aiResult").innerHTML=
+`<div class="card"><h3>${best.name}</h3>
+<p>Accuracy: ${accuracy}%</p></div>`;
+showDoctor(best.doctor);
+drawChart(labels,scores);
+}
+}
 
-document.getElementById("aiResult").innerHTML=`
-<div class="card">
-<h3>Prediction: ${best}</h3>
-<p>Accuracy: <b>${accuracy}%</b></p>
-<p style="color:red;">Demo AI — Consult Doctor</p>
-</div>`;
-
-if(chart){chart.destroy();}
-
-chart=new Chart(document.getElementById("resultChart"),{
+function drawChart(labels,data){
+if(chart)chart.destroy();
+chart=new Chart(document.getElementById("chart"),{
 type:"bar",
-data:{
-labels:labels,
-datasets:[{
-label:"Match %",
-data:scores
-}]
-}
+data:{labels:labels,datasets:[{label:"Match %",data:data}]}
 });
+}
+
+function showDoctor(name){
+let doc=doctors.find(d=>d.name===name);
+document.getElementById("doctorSection").innerHTML=
+`<div class="card">
+<h3>${doc.name}</h3>
+<p>Specialist: ${doc.specialist}</p>
+<p>Fees: ₹${doc.fees}</p>
+<p>Available: ${doc.time}</p>
+</div>`;
+loadDoctors();
+}
+
+function loadDoctors(){
+let select=document.getElementById("doctorSelect");
+select.innerHTML="";
+doctors.forEach(d=>{
+select.innerHTML+=`<option>${d.name}</option>`;
+});
+}
+
+function bookAppointment(){
+let name=document.getElementById("patientName").value;
+let doctor=document.getElementById("doctorSelect").value;
+let date=document.getElementById("appointmentDate").value;
+let time=document.getElementById("appointmentTime").value;
+document.getElementById("bookingResult").innerHTML=
+`<div class="card">
+<h3>Booking Confirmed</h3>
+<p>Patient: ${name}</p>
+<p>Doctor: ${doctor}</p>
+<p>Date: ${date}</p>
+<p>Time: ${time}</p>
+</div>`;
 }
 
 function sendMessage(){
 let input=document.getElementById("chatInput").value;
-let chatbox=document.getElementById("chatbox");
-
-chatbox.innerHTML+=`<div class="user">${input}</div>`;
-
-let reply="I recommend using symptom predictor.";
-
+let chat=document.getElementById("chatbox");
+chat.innerHTML+=`<div class="user">${input}</div>`;
+let reply="Use AI predictor for better result.";
 diseases.forEach(d=>{
-if(input.toLowerCase().includes(d.name.toLowerCase())){
+if(input.toLowerCase().includes(d.name.toLowerCase()))
 reply=`${d.name} symptoms are: ${d.symptoms.join(", ")}`;
-}
 });
-
-chatbox.innerHTML+=`<div class="bot">${reply}</div>`;
-chatbox.scrollTop=chatbox.scrollHeight;
+chat.innerHTML+=`<div class="bot">${reply}</div>`;
+chat.scrollTop=chat.scrollHeight;
 document.getElementById("chatInput").value="";
 }
 
-</script>
+loadDoctors();
 
+</script>
 </body>
 </html>
