@@ -279,62 +279,107 @@ link.click();
 
 bookingMessage.innerHTML="<div class='card'>✅ Appointment Booked & Slip Downloaded!</div>";
 }
-</script>
-<script>
+  <script>
 
-// ===== DISEASE DATASET =====
+// ================== 50+ DISEASE DATASET ==================
+
 const diseases = [
-{
-name: "Diabetes",
-category: "Chronic",
-symptoms: "Frequent urination, Increased thirst, Fatigue",
-causes: "Insulin problem",
-diagnosis: "Blood sugar test",
-treatment: "Insulin therapy"
-},
-{
-name: "Malaria",
-category: "Infectious",
-symptoms: "Fever, Chills, Sweating",
-causes: "Mosquito bite",
-diagnosis: "Blood test",
-treatment: "Antimalarial medicine"
-},
-{
-name: "Asthma",
-category: "Respiratory",
-symptoms: "Shortness of breath, Wheezing",
-causes: "Airway inflammation",
-diagnosis: "Spirometry test",
-treatment: "Inhaler"
-}
+
+{name:"Diabetes", symptoms:["fatigue","blurred vision","thirst","urination"]},
+{name:"Hypertension", symptoms:["headache","dizziness","chest pain"]},
+{name:"Malaria", symptoms:["fever","chills","sweating","headache"]},
+{name:"Dengue", symptoms:["fever","joint pain","rash","muscle pain"]},
+{name:"Tuberculosis", symptoms:["cough","weight loss","night sweats"]},
+{name:"Asthma", symptoms:["shortness of breath","wheezing","chest tightness"]},
+{name:"Migraine", symptoms:["headache","nausea","light sensitivity"]},
+{name:"Covid-19", symptoms:["fever","cough","loss of smell","breathlessness"]},
+{name:"Anemia", symptoms:["fatigue","weakness","pale skin"]},
+{name:"Arthritis", symptoms:["joint pain","swelling","stiffness"]},
+{name:"Typhoid", symptoms:["fever","weakness","abdominal pain"]},
+{name:"Pneumonia", symptoms:["cough","fever","chest pain"]},
+{name:"Flu", symptoms:["fever","cough","body ache"]},
+{name:"Gastritis", symptoms:["stomach pain","nausea","vomiting"]},
+{name:"Kidney Stone", symptoms:["back pain","blood in urine","nausea"]},
+{name:"Depression", symptoms:["sadness","fatigue","sleep disturbance"]},
+{name:"Anxiety", symptoms:["fear","nervousness","sweating"]},
+{name:"Bronchitis", symptoms:["cough","mucus","fatigue"]},
+{name:"Chickenpox", symptoms:["rash","fever","itching"]},
+{name:"Measles", symptoms:["rash","fever","cough"]},
+{name:"Hepatitis", symptoms:["jaundice","fatigue","abdominal pain"]},
+{name:"Appendicitis", symptoms:["abdominal pain","nausea","fever"]},
+{name:"Food Poisoning", symptoms:["vomiting","diarrhea","fever"]},
+{name:"Cholera", symptoms:["diarrhea","dehydration","weakness"]},
+{name:"Leukemia", symptoms:["fatigue","bleeding","weight loss"]},
+{name:"Stroke", symptoms:["numbness","confusion","headache"]},
+{name:"Heart Attack", symptoms:["chest pain","shortness of breath","nausea"]},
+{name:"Sinusitis", symptoms:["headache","facial pain","congestion"]},
+{name:"Ulcer", symptoms:["stomach pain","burning sensation","nausea"]},
+{name:"Psoriasis", symptoms:["skin rash","itching","red patches"]},
+{name:"Eczema", symptoms:["itching","dry skin","rash"]},
+{name:"Obesity", symptoms:["fatigue","joint pain","breathlessness"]},
+{name:"Thyroid Disorder", symptoms:["weight gain","fatigue","hair loss"]},
+{name:"Parkinson's Disease", symptoms:["tremor","stiffness","slow movement"]},
+{name:"Alzheimer's", symptoms:["memory loss","confusion","difficulty speaking"]},
+{name:"Epilepsy", symptoms:["seizures","confusion","staring spell"]},
+{name:"Liver Cirrhosis", symptoms:["jaundice","swelling","fatigue"]},
+{name:"Pancreatitis", symptoms:["abdominal pain","vomiting","fever"]},
+{name:"Osteoporosis", symptoms:["bone pain","fractures","back pain"]},
+{name:"UTI", symptoms:["burning urination","frequent urination","pain"]},
+{name:"Glaucoma", symptoms:["vision loss","eye pain","headache"]},
+{name:"Cataract", symptoms:["blurred vision","cloudy vision"]},
+{name:"Allergy", symptoms:["sneezing","itching","rash"]},
+{name:"Mumps", symptoms:["swollen glands","fever","headache"]},
+{name:"Rabies", symptoms:["fever","fear","confusion"]},
+{name:"Tetanus", symptoms:["muscle stiffness","jaw locking"]},
+{name:"Polio", symptoms:["weakness","paralysis","fever"]},
+{name:"Zika Virus", symptoms:["rash","fever","joint pain"]},
+{name:"Sickle Cell", symptoms:["pain","fatigue","swelling"]},
+{name:"Lyme Disease", symptoms:["rash","fever","fatigue"]}
+
 ];
 
-// ===== SEARCH FUNCTION =====
-function searchDisease() {
+// ================== AI SYMPTOM MATCHING ==================
 
-let input = document.getElementById("diseaseInput").value.toLowerCase();
-let result = document.getElementById("diseaseResult");
-result.innerHTML = "";
+function predictDisease(){
 
-let found = diseases.find(d => d.name.toLowerCase() === input);
+let input = document.getElementById("symptomInput").value.toLowerCase();
+let userSymptoms = input.split(" ");
 
-if(found){
-result.innerHTML = `
-<div class="card">
-<h3>${found.name}</h3>
-<p><b>Category:</b> ${found.category}</p>
-<p><b>Symptoms:</b> ${found.symptoms}</p>
-<p><b>Causes:</b> ${found.causes}</p>
-<p><b>Diagnosis:</b> ${found.diagnosis}</p>
-<p><b>Treatment:</b> ${found.treatment}</p>
-</div>
-`;
+let bestMatch = null;
+let maxScore = 0;
+
+diseases.forEach(disease => {
+
+let score = 0;
+
+disease.symptoms.forEach(symptom => {
+if(userSymptoms.includes(symptom)){
+score++;
+}
+});
+
+if(score > maxScore){
+maxScore = score;
+bestMatch = disease.name;
+}
+
+});
+
+let resultDiv = document.getElementById("aiResult");
+
+if(bestMatch){
+resultDiv.innerHTML = `<div class="card">
+<h3>🧠 AI Prediction Result</h3>
+<p><b>Possible Disease:</b> ${bestMatch}</p>
+<p><b>Match Score:</b> ${maxScore}</p>
+<p>⚠ This is a demo prediction. Consult a doctor.</p>
+</div>`;
 } else {
-result.innerHTML = "<div class='card'>Disease not found</div>";
+resultDiv.innerHTML = "<div class='card'>No matching disease found.</div>";
 }
 
 }
+
 
 </script>
 </body>
