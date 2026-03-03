@@ -280,6 +280,62 @@ link.click();
 bookingMessage.innerHTML="<div class='card'>✅ Appointment Booked & Slip Downloaded!</div>";
 }
 </script>
+<script>
 
+// ===== DISEASE DATASET =====
+const diseases = [
+{
+name: "Diabetes",
+category: "Chronic",
+symptoms: "Frequent urination, Increased thirst, Fatigue",
+causes: "Insulin problem",
+diagnosis: "Blood sugar test",
+treatment: "Insulin therapy"
+},
+{
+name: "Malaria",
+category: "Infectious",
+symptoms: "Fever, Chills, Sweating",
+causes: "Mosquito bite",
+diagnosis: "Blood test",
+treatment: "Antimalarial medicine"
+},
+{
+name: "Asthma",
+category: "Respiratory",
+symptoms: "Shortness of breath, Wheezing",
+causes: "Airway inflammation",
+diagnosis: "Spirometry test",
+treatment: "Inhaler"
+}
+];
+
+// ===== SEARCH FUNCTION =====
+function searchDisease() {
+
+let input = document.getElementById("diseaseInput").value.toLowerCase();
+let result = document.getElementById("diseaseResult");
+result.innerHTML = "";
+
+let found = diseases.find(d => d.name.toLowerCase() === input);
+
+if(found){
+result.innerHTML = `
+<div class="card">
+<h3>${found.name}</h3>
+<p><b>Category:</b> ${found.category}</p>
+<p><b>Symptoms:</b> ${found.symptoms}</p>
+<p><b>Causes:</b> ${found.causes}</p>
+<p><b>Diagnosis:</b> ${found.diagnosis}</p>
+<p><b>Treatment:</b> ${found.treatment}</p>
+</div>
+`;
+} else {
+result.innerHTML = "<div class='card'>Disease not found</div>";
+}
+
+}
+
+</script>
 </body>
 </html>
