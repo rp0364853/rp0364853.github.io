@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HealthCare Finder</title>
+
+<style>
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:'Segoe UI',sans-serif;
+scroll-behavior:smooth;
+}
+
+body{background:#f4f7fb;}
+
+nav{
+background:white;
+display:flex;
+justify-content:space-between;
+align-items:center;
+padding:15px 50px;
+box-shadow:0 3px 15px rgba(0,0,0,0.05);
+position:sticky;
+top:0;
+z-index:1000;
+}
+
+nav h2{color:#0d6efd;}
+
+nav ul{
+list-style:none;
+display:flex;
+gap:25px;
+}
+
+nav a{
+text-decoration:none;
+color:#333;
+font-weight:500;
+}
+
+.btn{
+background:#20c997;
+color:white;
+padding:8px 15px;
+border-radius:6px;
+}
+
+.hero{
+background:linear-gradient(135deg,#0d6efd,#20c997);
+color:white;
+text-align:center;
+padding:90px 20px;
+}
+
+.hero h1{font-size:45px;margin-bottom:15px;}
+
+.section{
+padding:70px 20px;
+max-width:1100px;
+margin:auto;
+}
+
+.section h2{
+text-align:center;
+margin-bottom:40px;
+}
+
+.search-box{
+display:flex;
+gap:10px;
+}
+
+.search-box input{
+flex:1;
+padding:12px;
+border-radius:8px;
+border:1px solid #ccc;
+}
+
+.search-box button{
+padding:12px 18px;
+background:#20c997;
+border:none;
+color:white;
+border-radius:8px;
+cursor:pointer;
+}
+
+.card{
+background:white;
+padding:20px;
+border-radius:12px;
+margin-top:20px;
+box-shadow:0 5px 20px rgba(0,0,0,0.05);
+}
+
+select,input{
+width:100%;
+padding:10px;
+margin:10px 0;
+border-radius:6px;
+border:1px solid #ccc;
+}
+
+form{
+background:white;
+padding:25px;
+border-radius:12px;
+box-shadow:0 5px 20px rgba(0,0,0,0.05);
+}
+
+form button{
+width:100%;
+padding:12px;
+background:#0d6efd;
+border:none;
+color:white;
+border-radius:8px;
+cursor:pointer;
+}
+
+footer{
+background:#0f172a;
+color:white;
+text-align:center;
+padding:25px;
+margin-top:40px;
+}
+</style>
+</head>
+<body>
+
+<nav>
+<h2>+ HealthCare Finder</h2>
+<ul>
+<li><a href="#disease">Diseases</a></li>
+<li><a href="#doctors">Doctors</a></li>
+<li><a href="#booking">Booking</a></li>
+</ul>
+<a href="#booking" class="btn">Get Started</a>
+</nav>
+
+<section class="hero">
+<h1>Your Health, Our Priority</h1>
+<p>Find doctors, search diseases & book appointments instantly.</p>
+</section>
+
+<section class="section" id="disease">
+<h2>Disease Encyclopedia</h2>
+<div class="search-box">
+<input type="text" id="diseaseInput" placeholder="Search disease...">
+<button onclick="searchDisease()">Search</button>
+</div>
+<div id="diseaseResult"></div>
+</section>
+
+<section class="section" id="doctors">
+<h2>Find Best Doctors</h2>
+<select id="specialization">
+<option>Cardiologist</option>
+<option>Neurologist</option>
+<option>Dermatologist</option>
+</select>
+
+<select id="sortFee">
+<option value="low">Fee Low → High</option>
+<option value="high">Fee High → Low</option>
+</select>
+
+<div id="doctorList"></div>
+</section>
+
+<section class="section" id="booking">
+<h2>Book Appointment</h2>
+
+<form onsubmit="bookAppointment(event)">
+<input type="text" id="name" placeholder="Patient Name" required>
+<input type="number" id="age" placeholder="Age" required>
+<select id="gender">
+<option>Male</option>
+<option>Female</option>
+</select>
+<input type="text" id="diseaseName" placeholder="Disease" required>
+<input type="date" id="date" required>
+<select id="time">
+<option>09:00 AM</option>
+<option>11:00 AM</option>
+<option>02:00 PM</option>
+</select>
+<button type="submit">Confirm Booking</button>
+</form>
+
+<div id="bookingMessage"></div>
+</section>
+
+<footer>
+HealthCare Finder © 2026 | Hackathon Project by Rahul Poddar
+</footer>
+
+<script>
+const diseases={
+diabetes:"High blood sugar levels. Diagnosis: Blood test.",
+malaria:"Mosquito borne infection. Diagnosis: Blood smear.",
+dengue:"Viral infection spread by mosquito. Diagnosis: NS1 test."
+};
+
+function searchDisease(){
+let input=document.getElementById("diseaseInput").value.toLowerCase();
+let result=document.getElementById("diseaseResult");
+result.innerHTML=diseases[input]
+? `<div class="card">${diseases[input]}</div>`
+: `<div class="card">Disease not found</div>`;
+}
+
+const doctors=[
+{name:"Dr Sharma",spec:"Cardiologist",fee:500},
+{name:"Dr Roy",spec:"Cardiologist",fee:800},
+{name:"Dr Khan",spec:"Neurologist",fee:600},
+{name:"Dr Sen",spec:"Dermatologist",fee:400}
+];
+
+function displayDoctors(){
+let spec=document.getElementById("specialization").value;
+let sort=document.getElementById("sortFee").value;
+let filtered=doctors.filter(d=>d.spec===spec);
+
+sort==="low"
+? filtered.sort((a,b)=>a.fee-b.fee)
+: filtered.sort((a,b)=>b.fee-a.fee);
+
+let list=document.getElementById("doctorList");
+list.innerHTML="";
+filtered.forEach(d=>{
+list.innerHTML+=`<div class="card">
+<strong>${d.name}</strong><br>
+Specialization: ${d.spec}<br>
+Fee: ₹${d.fee}
+</div>`;
+});
+}
+
+document.getElementById("specialization").addEventListener("change",displayDoctors);
+document.getElementById("sortFee").addEventListener("change",displayDoctors);
+displayDoctors();
+
+function bookAppointment(e){
+e.preventDefault();
+
+let booking={
+name:name.value,
+age:age.value,
+gender:gender.value,
+disease:diseaseName.value,
+date:date.value,
+time:time.value
+};
+
+localStorage.setItem("booking",JSON.stringify(booking));
+
+let slip=`
+Appointment Confirmed!
+
+Name: ${booking.name}
+Age: ${booking.age}
+Disease: ${booking.disease}
+Date: ${booking.date}
+Time: ${booking.time}
+`;
+
+let blob=new Blob([slip],{type:"text/plain"});
+let link=document.createElement("a");
+link.href=URL.createObjectURL(blob);
+link.download="Appointment.txt";
+link.click();
+
+bookingMessage.innerHTML="<div class='card'>✅ Appointment Booked & Slip Downloaded!</div>";
+}
+</script>
+
+</body>
+</html>
